@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineering — Year 12 Teacher Coverage Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5F8;
+    --surface:#FFFFFF;
+    --ink:#14181F;
+    --muted:#5B6472;
+    --faint:#8B93A1;
+    --border:#DEE4EB;
+    --grid: rgba(42,93,159,0.05);
+
+    --c-ssa:#2A5D9F; --c-ssa-bg:#EAF1FA;
+    --c-web:#157A66; --c-web-bg:#E7F5F1;
+    --c-auto:#6D28D9; --c-auto-bg:#F1EBFC;
+    --c-proj:#B04B15; --c-proj-bg:#FAEEE4;
+
+    --covered:#1E8F4E;
+    --covered-bg:#E7F6ED;
+    --redo:#C2841B;
+    --redo-bg:#FCF1DE;
+    --not:#8B93A1;
+    --not-bg:#EEF1F4;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/32px 32px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 32px,
+      var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    line-height:1.45;
+    min-height:100vh;
+    padding: 28px 16px 80px;
+  }
+
+  .wrap{max-width:960px;margin:0 auto;}
+
+  header.top{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:24px 26px;
+    margin-bottom:22px;
+    box-shadow:0 1px 2px rgba(20,24,31,0.04);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--faint);
+    margin:0 0 6px;
+  }
+  h1{
+    font-size:22px;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 18px;
+  }
+
+  .legend{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .legend-item{display:flex;align-items:center;gap:6px;}
+  .legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+
+  .summary-row{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .summary-stack{
+    flex:1;
+    min-width:220px;
+    height:12px;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    display:flex;
+  }
+  .stack-seg{height:100%;transition:width .3s ease;}
+  .summary-counts{
+    display:flex;
+    gap:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    white-space:nowrap;
+  }
+  .summary-counts b{font-weight:600;}
+  .cnt-covered{color:var(--covered);}
+  .cnt-redo{color:var(--redo);}
+  .cnt-not{color:var(--faint);}
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+  button.tool-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.02em;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink);
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  button.tool-btn:hover{background:#F0F2F5;border-color:#C7CFD9;}
+  button.tool-btn.danger:hover{background:#FDEDEA;border-color:#E8A99A;color:#A1341C;}
+  input[type=file]{display:none;}
+
+  section.focus{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    margin-bottom:16px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(20,24,31,0.03);
+  }
+  .focus-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:18px 22px;
+    cursor:pointer;
+    border-left:6px solid var(--accent);
+    user-select:none;
+  }
+  .focus-head:hover{background:rgba(0,0,0,0.015);}
+  .chev{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--faint);
+    font-size:13px;
+    transition:transform .2s ease;
+    flex-shrink:0;
+    width:14px;
+  }
+  section.focus.open .chev{transform:rotate(90deg);}
+  .focus-title{flex:1;min-width:0;}
+  .focus-title h2{font-size:16px;margin:0 0 6px;}
+  .focus-bar-track{
+    height:8px;
+    background:var(--not-bg);
+    border-radius:5px;
+    overflow:hidden;
+    max-width:340px;
+    display:flex;
+  }
+  .focus-bar-seg{height:100%;transition:width .3s ease;}
+  .focus-stat{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    white-space:nowrap;
+    text-align:right;
+    min-width:150px;
+  }
+
+  .focus-body{display:none;padding:4px 22px 18px 22px;}
+  section.focus.open .focus-body{display:block;}
+
+  .subheading{margin:16px 0 6px;}
+  .sub-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    padding:6px 0;
+    user-select:none;
+  }
+  .sub-chev{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--faint);
+    font-size:11px;
+    transition:transform .2s ease;
+    width:10px;
+  }
+  .subheading.open .sub-chev{transform:rotate(90deg);}
+  .sub-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--muted);
+  }
+  .sub-frac{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--faint);
+    margin-left:auto;
+  }
+  .sub-items{display:none;padding-left:18px;border-left:2px solid var(--accent-bg);margin-left:5px;}
+  .subheading.open .sub-items{display:block;}
+
+  .item{margin:7px 0;}
+  .row{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    font-size:14.5px;
+  }
+  .row.sub-item{font-size:13.5px;}
+
+  .status-btn{
+    flex-shrink:0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:600;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:3px 8px;
+    cursor:pointer;
+    background:var(--not-bg);
+    color:var(--muted);
+    white-space:nowrap;
+    min-width:112px;
+    text-align:center;
+    transition:background .12s ease, color .12s ease, border-color .12s ease;
+    margin-top:1px;
+  }
+  .status-btn[data-status="covered"]{background:var(--covered-bg);color:var(--covered);border-color:var(--covered);}
+  .status-btn[data-status="redo"]{background:var(--redo-bg);color:var(--redo);border-color:var(--redo);}
+  .status-btn[data-status="not"]{background:var(--not-bg);color:var(--muted);border-color:var(--border);}
+  .status-btn:hover{filter:brightness(0.96);}
+
+  .txt{padding-top:3px;}
+  .row[data-status="covered"] .txt{color:var(--ink);}
+  .row[data-status="redo"] .txt{color:var(--ink);}
+  .row[data-status="not"] .txt{color:var(--ink);}
+
+  .including-list{
+    padding-left:25px;
+    margin:6px 0 2px;
+    border-left:2px dashed var(--border);
+  }
+
+  footer{
+    text-align:center;
+    color:var(--faint);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    margin-top:26px;
+    line-height:1.7;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:22px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink);
+    color:#fff;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    padding:10px 18px;
+    border-radius:8px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:520px){
+    .focus-head{padding:14px 16px;gap:10px;}
+    .focus-body{padding:2px 16px 14px;}
+    .focus-stat{min-width:auto;}
+    .focus-bar-track{max-width:none;}
+    .status-btn{min-width:96px;font-size:10.5px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">NSW Software Engineering 11–12 Syllabus (2022) · Year 12 · Teacher Edition</p>
+    <h1>Coverage Tracker</h1>
+    <p class="subtitle">Secure Software Architecture · Programming for the Web · Software Automation · Software Engineering Project</p>
+
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--not)"></span>Not covered</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--covered)"></span>Covered &amp; set</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--redo)"></span>Covered — needs redoing</span>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-stack" id="overallStack"></div>
+      <div class="summary-counts">
+        <span class="cnt-covered">● <b id="cntCovered">0</b> set</span>
+        <span class="cnt-redo">● <b id="cntRedo">0</b> redo</span>
+        <span class="cnt-not">● <b id="cntNot">0</b> not covered</span>
+        <span id="cntTotal" style="color:var(--faint)">/ 0 total</span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="tool-btn" id="expandAllBtn">Expand all</button>
+      <button class="tool-btn" id="collapseAllBtn">Collapse all</button>
+      <button class="tool-btn" id="exportBtn">Export coverage (.json)</button>
+      <button class="tool-btn" id="importBtn">Import coverage</button>
+      <button class="tool-btn danger" id="resetBtn">Reset all</button>
+      <input type="file" id="importFile" accept="application/json">
+    </div>
+  </header>
+
+  <div id="sections"></div>
+
+  <footer>
+    Content sourced from the Software Engineering 11–12 Syllabus (2022) © NSW Education Standards Authority (NESA).<br>
+    Click any status button to cycle: Not covered → Covered &amp; set → Needs redoing → Not covered.<br>
+    This tracker is saved in this browser only. Use Export before switching browsers or devices, then Import there.
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STATES = ["not", "covered", "redo"];
+const STATE_LABEL = { not: "Not covered", covered: "Covered & set", redo: "Needs redoing" };
+
+const DATA = [
+  {
+    key:"ssa", name:"Secure Software Architecture", accent:"var(--c-ssa)", accentBg:"var(--c-ssa-bg)",
+    subs:[
+      { name:"Designing software", items:[
+        { t:"Describe the benefits of developing secure software", inc:["Data protection","Minimising cyber attacks and vulnerabilities"] },
+        { t:"Interpret and apply fundamental software development steps to develop secure code", inc:["Requirements definition","Determining specifications","Design","Development","Integration","Testing and debugging","Installation","Maintenance"] },
+        { t:"Describe how the capabilities and experience of end users influence the secure design features of software" }
+      ]},
+      { name:"Developing secure code", items:[
+        { t:"Explore fundamental software design security concepts when developing programming code", inc:["Confidentiality","Integrity","Availability","Authentication","Authorisation","Accountability"] },
+        { t:"Apply security features incorporated into software, including data protection, security, privacy and regulatory compliance" },
+        { t:"Use and explain the contribution of cryptography and sandboxing to the ‘security by design’ approach in the development of software solutions" },
+        { t:"Use and explain the ‘privacy by design’ approach in the development of software solutions", inc:["Proactive not reactive approach","Embed privacy into design","Respect for user privacy"] },
+        { t:"Test and evaluate the security and resilience of software by determining vulnerabilities, hardening systems, handling breaches, maintaining business continuity and conducting disaster recovery" },
+        { t:"Apply and evaluate strategies used by software developers to manage the security of programming code", inc:["Code review","Static application security testing (SAST)","Dynamic application security testing (DAST)","Vulnerability assessment","Penetration testing"] },
+        { t:"Design, develop and implement code using defensive data input handling practices, including input validation, sanitisation and error handling" },
+        { t:"Design, develop and implement a safe coding standard to minimise software vulnerabilities" },
+        { t:"Design, develop and implement code considering efficient execution for the user", inc:["Memory management","Session management","Exception management"] },
+        { t:"Design, develop and implement secure code to minimise vulnerabilities in user action controls", inc:["Broken authentication and session management","Cross-site scripting (XSS) and cross-site request forgery (CSRF)","Invalid forwarding and redirecting","Race conditions"] },
+        { t:"Design, develop and implement secure code to protect user file and hardware vulnerabilities from file attacks and side channel attacks" }
+      ]},
+      { name:"Impact of safe and secure software development", items:[
+        { t:"Apply and describe the benefits of collaboration to develop safe and secure software", inc:["Considering various points of view","Delegating tasks based on expertise","Quality of the solution"] },
+        { t:"Investigate and explain the benefits to an enterprise of the implementation of safe and secure development practices", inc:["Improved products or services","Influence on future software development","Improved work practices","Productivity","Business interactivity"] },
+        { t:"Evaluate the social, ethical and legal issues and ramifications that affect people and enterprises resulting from the development and implementation of safe and secure software", inc:["Employment","Data security","Privacy","Copyright","Intellectual property","Digital disruption"] }
+      ]}
+    ]
+  },
+  {
+    key:"web", name:"Programming for the Web", accent:"var(--c-web)", accentBg:"var(--c-web-bg)",
+    subs:[
+      { name:"Data transmission using the web", items:[
+        { t:"Explore the applications of web programming", inc:["Interactive website/webpages","E-commerce","Progressive web apps (PWAs)"] },
+        { t:"Investigate and practise how data is transferred on the internet", inc:["Data packets","Internet protocol (IP) addresses, including IPv4","Domain name systems (DNS)"] },
+        { t:"Investigate and describe the function of web protocols and their ports", inc:["HTTP, HTTPS","TCP/IP","DNS","FTP, SFTP","SSL, TLS","SMTP, POP3, IMAP"] },
+        { t:"Explain the processes for securing the web", inc:["Secure Sockets Layer (SSL) certificates","Encryption algorithms","Encryption keys","Plain text and cipher text","Authentication and authorisation","Hash values","Digital signatures"] },
+        { t:"Investigate the effect of big data on web architecture", inc:["Data mining","Metadata","Streaming service management"] }
+      ]},
+      { name:"Designing web applications", items:[
+        { t:"Investigate and explain the role of the World Wide Web Consortium (W3C) in the development of applications for the web", inc:["Web Accessibility Initiative (WAI)","Internationalisation","Web security","Privacy","Machine-readable data"] },
+        { t:"Model elements that form a web development system", inc:["Client-side (front-end) web programming","Server-side (back-end) web programming","Interfacing with databases that are based on Structured Query Language (SQL) or non-SQL"] },
+        { t:"Explore and explain the influence of a web browser on web development, including the use of developer (dev) tools" },
+        { t:"Investigate cascading style sheets (CSS) and its impact on the design of a web application", inc:["Consistency of appearance","Flexibility with browsers or display devices","CSS maintenance tools"] },
+        { t:"Investigate the reasons for version control and apply it when developing a web application" },
+        { t:"Explore the types and significance of code libraries for front-end web development", inc:["Frameworks that control complex web applications","Template engines","Predesigned CSS classes"] },
+        { t:"Explain the use and development of open-source software in relation to web development" },
+        { t:"Investigate methods to support and manage the load times of web pages/applications" },
+        { t:"Research, experiment with and evaluate the prevalence and use of web content management systems (CMS)" },
+        { t:"Assess the contribution of back-end web development to the success of a web application" },
+        { t:"Observe and describe the back-end process used to manage a web request", inc:["Role of webserver software","Web framework","Objects","Libraries","Databases"] },
+        { t:"Develop a web application using an appropriate operating system with shell scripts to make files and directories, and searching for text in a text file" },
+        { t:"Apply a web-based database and construct a script that executes SQL", inc:["Selecting fields","Incorporating ‘group by’","Common SQL queries","Constraints using the WHERE keyword","Table joins"] },
+        { t:"Compare non-SQL (NoSQL) databases to SQL" },
+        { t:"Describe how collaborative work practices between front-end and back-end developers improve the development of a web solution" },
+        { t:"Design, develop and implement a progressive web app (PWA)", inc:["The application of design and user interface (UI) and user experience (UX) principles of font, colour, audio, video and navigation","A UI that considers accessibility and inclusivity"] }
+      ]}
+    ]
+  },
+  {
+    key:"auto", name:"Software Automation", accent:"var(--c-auto)", accentBg:"var(--c-auto-bg)",
+    subs:[
+      { name:"Algorithms in machine learning", items:[
+        { t:"Investigate how machine learning (ML) supports automation through the use of DevOps, robotic process automation (RPA) and business process automation (BPA)" },
+        { t:"Distinguish between AI and ML" },
+        { t:"Explore methods of training ML", inc:["Supervised learning","Unsupervised learning","Semi-supervised learning","Reinforcement learning"] },
+        { t:"Investigate common applications of key ML algorithms", inc:["Data analysis and forecasting","Virtual personal assistants","Image recognition"] },
+        { t:"Research models used by software engineers to design and analyse ML", inc:["Decision trees","Neural networks"] },
+        { t:"Describe types of algorithms associated with ML", inc:["Linear regression","Logistic regression","K-nearest neighbour"] }
+      ]},
+      { name:"Programming for automation", items:[
+        { t:"Design, develop and apply ML regression models using an object-oriented programming (OOP) language to predict numeric values", inc:["Linear regression","Polynomial regression","Logistic regression"] },
+        { t:"Apply neural network models using an OOP language to make predictions" }
+      ]},
+      { name:"Significance and impact of ML and AI", items:[
+        { t:"Assess the impact of automation on the individual, society and the environment", inc:["Safety of workers","People with disability","The nature and skills required for employment","Production efficiency, waste and the environment","The economy and distribution of wealth"] },
+        { t:"Explore by implementation how patterns in human behaviour influence ML and AI software development", inc:["Psychological responses","Patterns related to acute stress response","Cultural protocols","Belief systems"] },
+        { t:"Investigate the effect of human and dataset source bias in the development of ML and AI solutions" }
+      ]}
+    ]
+  },
+  {
+    key:"proj", name:"Software Engineering Project", accent:"var(--c-proj)", accentBg:"var(--c-proj-bg)",
+    subs:[
+      { name:"Identifying and defining", items:[
+        { t:"Define and analyse the requirements of a problem", inc:["Demonstrating need(s) or opportunities","Assessing scheduling and financial feasibility","Generating requirements including functionality and performance","Defining data structures and data types","Defining boundaries"] },
+        { t:"Explore tools used to develop ideas and generate solutions", inc:["Brainstorming, mind-mapping and storyboards","Data dictionaries, including selecting appropriate data types","Algorithm design","Code generation","Testing and debugging","Installation","Maintenance"] },
+        { t:"Investigate types of software implementation methods", inc:["Direct","Phased","Parallel","Pilot"] }
+      ]},
+      { name:"Research and planning", items:[
+        { t:"Research and use the Waterfall software development approach", inc:["Logical progression of steps used throughout the life cycle","Stages of ‘falling water’","Advantages and disadvantages","Scale and types of developments"] },
+        { t:"Research and use the Agile software development approach", inc:["Rate of developing a final solution","Method tailoring","Iteration workflow","Scale and types of developments"] },
+        { t:"Research the WAgile software development approach", inc:["Understanding it is a hybrid model","Analysis of the ‘when’ and ‘how’ intervention is applied during the development life cycle","Scale and types of developments"] },
+        { t:"Apply project management to plan and conduct the development and implementation of a project and software engineering solution", inc:["Scheduling and tracking using a software tool, including Gantt charts","Using collaboration tools"] },
+        { t:"Explore social and ethical issues associated with project work, including working individually, collaboratively and responding to stakeholders" },
+        { t:"Explore communication issues associated with project work", inc:["Involving and empowering the client","Enabling feedback","Negotiating"] },
+        { t:"Investigate how software engineering solutions are quality assured", inc:["Defining criteria on which quality will be judged","Ensuring requirements are met using a continual checking process","Addressing compliance and legislative requirements"] },
+        { t:"Demonstrate the use of modelling tools" },
+        { t:"Explain the contribution of back-end engineering to the success and ease of software development", inc:["Technology used","Error handling","Interfacing with front end","Security engineering"] }
+      ]},
+      { name:"Producing and implementing", items:[
+        { t:"Design, construct and implement a solution to a software problem using appropriate development approach(es)" },
+        { t:"Present a software engineering solution using presentation software" },
+        { t:"Develop, construct and document code" },
+        { t:"Allocate resources to support the development of a software engineering solution" },
+        { t:"Demonstrate the use of programmed data backup" },
+        { t:"Implement version control when developing a software engineering solution" },
+        { t:"Explore strategies to respond to difficulties when developing a software engineering solution", inc:["Looking for a solution online","Collaboration with peers","Outsourcing"] },
+        { t:"Propose an additional innovative solution using a hardware and software design" }
+      ]},
+      { name:"Testing and evaluating", items:[
+        { t:"Apply methodologies to test and debug code" },
+        { t:"Use a language-dependent code optimisation technique" },
+        { t:"Analyse and respond to feedback" },
+        { t:"Evaluate the effectiveness of a software engineering solution", inc:["Developing a report to synthesise feedback","Developing a test plan","Testing data used/generated based on path and boundary testing","Comparing actual output with expected output"] }
+      ]}
+    ]
+  }
+];
+
+const STORAGE_KEY = "se_y12_teacher_coverage_v1";
+let state = {};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    state = raw ? JSON.parse(raw) : {};
+  }catch(e){ state = {}; }
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ showToast("Couldn't save — storage may be full or disabled."); }
+}
+
+function itemId(si, ui, ii){ return `s${si}-u${ui}-i${ii}`; }
+function incId(si, ui, ii, ci){ return `s${si}-u${ui}-i${ii}-c${ci}`; }
+function getStatus(id){ return state[id] || "not"; }
+function nextStatus(cur){ return STATES[(STATES.indexOf(cur) + 1) % STATES.length]; }
+
+function buildUI(){
+  const root = document.getElementById("sections");
+  root.innerHTML = "";
+  DATA.forEach((sec, si)=>{
+    const secEl = document.createElement("section");
+    secEl.className = "focus open";
+    secEl.style.setProperty("--accent", sec.accent);
+    secEl.style.setProperty("--accent-bg", sec.accentBg);
+
+    const head = document.createElement("div");
+    head.className = "focus-head";
+    head.innerHTML = `
+      <span class="chev">▸</span>
+      <div class="focus-title">
+        <h2>${sec.name}</h2>
+        <div class="focus-bar-track" id="fbar-${si}"></div>
+      </div>
+      <div class="focus-stat" id="fstat-${si}"></div>
+    `;
+    head.addEventListener("click", ()=> secEl.classList.toggle("open"));
+    secEl.appendChild(head);
+
+    const body = document.createElement("div");
+    body.className = "focus-body";
+
+    sec.subs.forEach((sub, ui)=>{
+      const subEl = document.createElement("div");
+      subEl.className = "subheading open";
+
+      const subHead = document.createElement("div");
+      subHead.className = "sub-head";
+      subHead.innerHTML = `<span class="sub-chev">▸</span><span class="sub-name">${sub.name}</span><span class="sub-frac" id="sfrac-${si}-${ui}"></span>`;
+      subHead.addEventListener("click", ()=> subEl.classList.toggle("open"));
+      subEl.appendChild(subHead);
+
+      const list = document.createElement("div");
+      list.className = "sub-items";
+
+      sub.items.forEach((it, ii)=>{
+        const wrap = document.createElement("div");
+        wrap.className = "item";
+
+        const id = itemId(si,ui,ii);
+        const row = document.createElement("div");
+        row.className = "row";
+        row.dataset.id = id;
+        row.innerHTML = `<button type="button" class="status-btn" data-id="${id}"></button><span class="txt">${it.t}</span>`;
+        wrap.appendChild(row);
+
+        if(it.inc && it.inc.length){
+          const incWrap = document.createElement("div");
+          incWrap.className = "including-list";
+          it.inc.forEach((txt, ci)=>{
+            const cid = incId(si,ui,ii,ci);
+            const crow = document.createElement("div");
+            crow.className = "row sub-item";
+            crow.dataset.id = cid;
+            crow.innerHTML = `<button type="button" class="status-btn" data-id="${cid}"></button><span class="txt">${txt}</span>`;
+            incWrap.appendChild(crow);
+          });
+          wrap.appendChild(incWrap);
+        }
+
+        list.appendChild(wrap);
+      });
+
+      subEl.appendChild(list);
+      body.appendChild(subEl);
+    });
+
+    secEl.appendChild(body);
+    root.appendChild(secEl);
+  });
+
+  root.querySelectorAll('.status-btn').forEach(btn=>{
+    paintButton(btn);
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      const cur = getStatus(id);
+      const nxt = nextStatus(cur);
+      state[id] = nxt;
+      paintButton(btn);
+      saveState();
+      updateProgress();
+    });
+  });
+}
+
+function paintButton(btn){
+  const status = getStatus(btn.dataset.id);
+  btn.dataset.status = status;
+  btn.textContent = STATE_LABEL[status];
+  const row = btn.closest('.row');
+  if(row) row.dataset.status = status;
+}
+
+function collectIds(){
+  const all = [];
+  DATA.forEach((sec, si)=> sec.subs.forEach((sub, ui)=> sub.items.forEach((it, ii)=>{
+    all.push({ id:itemId(si,ui,ii), si, ui });
+    if(it.inc) it.inc.forEach((_, ci)=> all.push({ id:incId(si,ui,ii,ci), si, ui }));
+  })));
+  return all;
+}
+
+function tally(ids){
+  let covered=0, redo=0, not=0;
+  ids.forEach(x=>{
+    const s = getStatus(x.id);
+    if(s==="covered") covered++;
+    else if(s==="redo") redo++;
+    else not++;
+  });
+  return { covered, redo, not, total: ids.length };
+}
+
+function stackHTML(t){
+  const cPct = t.total ? (t.covered/t.total*100) : 0;
+  const rPct = t.total ? (t.redo/t.total*100) : 0;
+  const nPct = 100 - cPct - rPct;
+  return `<div class="stack-seg" style="width:${cPct}%;background:var(--covered)"></div>`+
+         `<div class="stack-seg" style="width:${rPct}%;background:var(--redo)"></div>`+
+         `<div class="stack-seg" style="width:${nPct}%;background:var(--not-bg)"></div>`;
+}
+
+function updateProgress(){
+  const all = collectIds();
+  const t = tally(all);
+  document.getElementById("overallStack").innerHTML = stackHTML(t);
+  document.getElementById("cntCovered").textContent = t.covered;
+  document.getElementById("cntRedo").textContent = t.redo;
+  document.getElementById("cntNot").textContent = t.not;
+  document.getElementById("cntTotal").textContent = `/ ${t.total} total`;
+
+  DATA.forEach((sec, si)=>{
+    const secIds = all.filter(x=>x.si===si);
+    const st = tally(secIds);
+    const bar = document.getElementById(`fbar-${si}`);
+    if(bar) bar.innerHTML = stackHTML(st).replace(/var\(--not-bg\)/g,'var(--accent-bg)');
+    const stat = document.getElementById(`fstat-${si}`);
+    if(stat) stat.textContent = `${st.covered} set · ${st.redo} redo · ${st.not} not covered`;
+
+    sec.subs.forEach((sub, ui)=>{
+      const subIds = all.filter(x=>x.si===si && x.ui===ui);
+      const sst = tally(subIds);
+      const el = document.getElementById(`sfrac-${si}-${ui}`);
+      if(el) el.textContent = `${sst.covered} set · ${sst.redo} redo · ${sst.not} not covered`;
+    });
+  });
+}
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=> t.classList.remove("show"), 2400);
+}
+
+document.getElementById("expandAllBtn").addEventListener("click", ()=>{
+  document.querySelectorAll(".focus, .subheading").forEach(el=>el.classList.add("open"));
+});
+document.getElementById("collapseAllBtn").addEventListener("click", ()=>{
+  document.querySelectorAll(".focus, .subheading").forEach(el=>el.classList.remove("open"));
+});
+
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const payload = { app: "se-y12-teacher-coverage", exportedAt: new Date().toISOString(), state };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `se-y12-teacher-coverage-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Coverage exported.");
+});
+
+document.getElementById("importBtn").addEventListener("click", ()=>{
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed || typeof parsed.state !== "object") throw new Error("bad format");
+      state = parsed.state;
+      saveState();
+      buildUI();
+      updateProgress();
+      showToast("Coverage imported.");
+    }catch(err){
+      showToast("Import failed — that file doesn't look right.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Clear all coverage marks? This can't be undone (export first if you want a backup).")){
+    state = {};
+    saveState();
+    buildUI();
+    updateProgress();
+    showToast("All coverage marks cleared.");
+  }
+});
+
+loadState();
+buildUI();
+updateProgress();
+</script>
+</body>
+</html>
