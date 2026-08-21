@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Software Engineering — Year 12 Syllabus Coverage Tracker</title>
+<title>Software Engineering — Year 12 Syllabus Checklist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -300,8 +300,8 @@
 <div class="wrap">
 
   <header class="top">
-    <p class="eyebrow">NSW Software Engineering 11–12 Syllabus (2022) · Year 12  Edition</p>
-    <h1>Coverage Tracker</h1>
+    <p class="eyebrow">NSW Software Engineering 11–12 Syllabus (2022) · Year 12</p>
+    <h1>Year 12 Syllabus Checklist</h1>
     <p class="subtitle">Secure Software Architecture · Programming for the Web · Software Automation · Software Engineering Project</p>
 
     <div class="legend">
@@ -466,7 +466,7 @@ const DATA = [
   }
 ];
 
-const STORAGE_KEY = "se_y12_teacher_coverage_v1";
+const STORAGE_KEY = "se_y12_syllabus_checklist_v1";
 let state = {};
 
 function loadState(){
@@ -652,13 +652,13 @@ document.getElementById("collapseAllBtn").addEventListener("click", ()=>{
 });
 
 document.getElementById("exportBtn").addEventListener("click", ()=>{
-  const payload = { app: "se-y12-teacher-coverage", exportedAt: new Date().toISOString(), state };
+  const payload = { app: "se-y12-syllabus-checklist", exportedAt: new Date().toISOString(), state };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   const stamp = new Date().toISOString().slice(0,10);
   a.href = url;
-  a.download = `se-y12-teacher-coverage-${stamp}.json`;
+  a.download = `se-y12-syllabus-checklist-${stamp}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
