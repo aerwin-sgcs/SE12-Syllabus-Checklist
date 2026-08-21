@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programming for the Web — Year 12 Syllabus Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5F8;
+    --surface:#FFFFFF;
+    --ink:#14181F;
+    --muted:#5B6472;
+    --faint:#8B93A1;
+    --border:#DEE4EB;
+    --grid: rgba(42,93,159,0.05);
+
+    --c-ssa:#2A5D9F;
+    --c-ssa-bg:#EAF1FA;
+    --c-web:#157A66;
+    --c-web-bg:#E7F5F1;
+    --c-auto:#6D28D9;
+    --c-auto-bg:#F1EBFC;
+    --c-proj:#B04B15;
+    --c-proj-bg:#FAEEE4;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/32px 32px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 32px,
+      var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    line-height:1.45;
+    min-height:100vh;
+    padding: 28px 16px 80px;
+  }
+
+  .wrap{max-width:880px;margin:0 auto;}
+
+  header.top{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:24px 26px;
+    margin-bottom:22px;
+    box-shadow:0 1px 2px rgba(20,24,31,0.04);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--faint);
+    margin:0 0 6px;
+  }
+  h1{
+    font-size:22px;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 18px;
+  }
+
+  .overall-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .overall-pct{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:28px;
+    min-width:78px;
+  }
+  .bar-track{
+    flex:1;
+    min-width:180px;
+    height:10px;
+    background:#E7EBF0;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .bar-fill{
+    height:100%;
+    background:linear-gradient(90deg,#2A5D9F,#157A66 33%,#6D28D9 66%,#B04B15);
+    width:0%;
+    transition:width .35s ease;
+  }
+  .overall-frac{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.02em;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink);
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  button:hover{background:#F0F2F5;border-color:#C7CFD9;}
+  button.danger:hover{background:#FDEDEA;border-color:#E8A99A;color:#A1341C;}
+  input[type=file]{display:none;}
+
+  section.focus{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    margin-bottom:16px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(20,24,31,0.03);
+  }
+  .focus-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:18px 22px;
+    cursor:pointer;
+    border-left:6px solid var(--accent);
+    user-select:none;
+  }
+  .focus-head:hover{background:rgba(0,0,0,0.015);}
+  .chev{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--faint);
+    font-size:13px;
+    transition:transform .2s ease;
+    flex-shrink:0;
+    width:14px;
+  }
+  section.focus.open .chev{transform:rotate(90deg);}
+  .focus-title{
+    flex:1;
+    min-width:0;
+  }
+  .focus-title h2{
+    font-size:16px;
+    margin:0 0 6px;
+  }
+  .focus-bar-track{
+    height:7px;
+    background:var(--accent-bg);
+    border-radius:5px;
+    overflow:hidden;
+    max-width:340px;
+  }
+  .focus-bar-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .3s ease;
+  }
+  .focus-stat{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--accent);
+    white-space:nowrap;
+    text-align:right;
+    min-width:96px;
+  }
+
+  .focus-body{
+    display:none;
+    padding:4px 22px 18px 22px;
+  }
+  section.focus.open .focus-body{display:block;}
+
+  .subheading{margin:16px 0 6px;}
+  .sub-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    padding:6px 0;
+    user-select:none;
+  }
+  .sub-chev{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--faint);
+    font-size:11px;
+    transition:transform .2s ease;
+    width:10px;
+  }
+  .subheading.open .sub-chev{transform:rotate(90deg);}
+  .sub-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:var(--muted);
+  }
+  .sub-frac{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--faint);
+    margin-left:auto;
+  }
+  .sub-items{display:none;padding-left:20px;border-left:2px solid var(--accent-bg);margin-left:5px;}
+  .subheading.open .sub-items{display:block;}
+
+  .item{margin:9px 0;}
+  label.row{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    cursor:pointer;
+    font-size:14.5px;
+  }
+  label.row input[type=checkbox]{
+    margin-top:3px;
+    width:16px;height:16px;
+    accent-color:var(--accent);
+    flex-shrink:0;
+    cursor:pointer;
+  }
+  label.row.sub-item{font-size:13.5px;color:var(--muted);}
+  label.row.checked{color:var(--faint);}
+  label.row.checked span.txt{text-decoration:line-through;text-decoration-color:var(--border);}
+
+  .including-list{
+    padding-left:25px;
+    margin:6px 0 2px;
+    border-left:2px dashed var(--border);
+  }
+
+  footer{
+    text-align:center;
+    color:var(--faint);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    margin-top:26px;
+    line-height:1.7;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:22px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink);
+    color:#fff;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    padding:10px 18px;
+    border-radius:8px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:520px){
+    .focus-head{padding:14px 16px;gap:10px;}
+    .focus-body{padding:2px 16px 14px;}
+    .focus-stat{min-width:auto;}
+    .focus-bar-track{max-width:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <p class="eyebrow">NSW Software Engineering 11–12 Syllabus (2022) · Year 12 · Programming for the Web</p>
+    <h1>Programming for the Web</h1>
+    <p class="subtitle">Year 12 Syllabus Checklist</p>
+    <div class="overall-row">
+      <div class="overall-pct" id="overallPct">0%</div>
+      <div class="bar-track"><div class="bar-fill" id="overallBar"></div></div>
+      <div class="overall-frac" id="overallFrac">0 / 0</div>
+    </div>
+    <div class="toolbar">
+      <button id="expandAllBtn">Expand all</button>
+      <button id="collapseAllBtn">Collapse all</button>
+      <button id="exportBtn">Export progress (.json)</button>
+      <button id="importBtn">Import progress</button>
+      <button id="resetBtn" class="danger">Reset all ticks</button>
+      <input type="file" id="importFile" accept="application/json">
+    </div>
+  </header>
+
+  <div id="sections"></div>
+
+  <footer>
+    Content sourced from the Software Engineering 11–12 Syllabus (2022) © NSW Education Standards Authority (NESA).<br>
+    This checklist is a study aid only — always verify against the official syllabus for assessment purposes.<br>
+    Your ticks are saved in this browser only. Use Export before switching browsers or devices, then Import there.
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [
+  {
+    key:"web", name:"Programming for the Web", accent:"var(--c-web)", accentBg:"var(--c-web-bg)",
+    subs:[
+      { name:"Data transmission using the web", items:[
+        { t:"Explore the applications of web programming", inc:["Interactive website/webpages","E-commerce","Progressive web apps (PWAs)"] },
+        { t:"Investigate and practise how data is transferred on the internet", inc:["Data packets","Internet protocol (IP) addresses, including IPv4","Domain name systems (DNS)"] },
+        { t:"Investigate and describe the function of web protocols and their ports", inc:["HTTP, HTTPS","TCP/IP","DNS","FTP, SFTP","SSL, TLS","SMTP, POP3, IMAP"] },
+        { t:"Explain the processes for securing the web", inc:["Secure Sockets Layer (SSL) certificates","Encryption algorithms","Encryption keys","Plain text and cipher text","Authentication and authorisation","Hash values","Digital signatures"] },
+        { t:"Investigate the effect of big data on web architecture", inc:["Data mining","Metadata","Streaming service management"] }
+      ]},
+      { name:"Designing web applications", items:[
+        { t:"Investigate and explain the role of the World Wide Web Consortium (W3C) in the development of applications for the web", inc:["Web Accessibility Initiative (WAI)","Internationalisation","Web security","Privacy","Machine-readable data"] },
+        { t:"Model elements that form a web development system", inc:["Client-side (front-end) web programming","Server-side (back-end) web programming","Interfacing with databases that are based on Structured Query Language (SQL) or non-SQL"] },
+        { t:"Explore and explain the influence of a web browser on web development, including the use of developer (dev) tools" },
+        { t:"Investigate cascading style sheets (CSS) and its impact on the design of a web application", inc:["Consistency of appearance","Flexibility with browsers or display devices","CSS maintenance tools"] },
+        { t:"Investigate the reasons for version control and apply it when developing a web application" },
+        { t:"Explore the types and significance of code libraries for front-end web development", inc:["Frameworks that control complex web applications","Template engines","Predesigned CSS classes"] },
+        { t:"Explain the use and development of open-source software in relation to web development" },
+        { t:"Investigate methods to support and manage the load times of web pages/applications" },
+        { t:"Research, experiment with and evaluate the prevalence and use of web content management systems (CMS)" },
+        { t:"Assess the contribution of back-end web development to the success of a web application" },
+        { t:"Observe and describe the back-end process used to manage a web request", inc:["Role of webserver software","Web framework","Objects","Libraries","Databases"] },
+        { t:"Develop a web application using an appropriate operating system with shell scripts to make files and directories, and searching for text in a text file" },
+        { t:"Apply a web-based database and construct a script that executes SQL", inc:["Selecting fields","Incorporating ‘group by’","Common SQL queries","Constraints using the WHERE keyword","Table joins"] },
+        { t:"Compare non-SQL (NoSQL) databases to SQL" },
+        { t:"Describe how collaborative work practices between front-end and back-end developers improve the development of a web solution" },
+        { t:"Design, develop and implement a progressive web app (PWA)", inc:["The application of design and user interface (UI) and user experience (UX) principles of font, colour, audio, video and navigation","A UI that considers accessibility and inclusivity"] }
+      ]}
+    ]
+  }
+];
+
+const STORAGE_KEY = "se_y12_web_checklist_state_v1";
+let state = {};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    state = raw ? JSON.parse(raw) : {};
+  }catch(e){ state = {}; }
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ showToast("Couldn't save — storage may be full or disabled."); }
+}
+
+function itemId(si, ui, ii){ return `s${si}-u${ui}-i${ii}`; }
+function incId(si, ui, ii, ci){ return `s${si}-u${ui}-i${ii}-c${ci}`; }
+
+function buildUI(){
+  const root = document.getElementById("sections");
+  root.innerHTML = "";
+  DATA.forEach((sec, si)=>{
+    const secEl = document.createElement("section");
+    secEl.className = "focus open";
+    secEl.style.setProperty("--accent", sec.accent);
+    secEl.style.setProperty("--accent-bg", sec.accentBg);
+
+    const head = document.createElement("div");
+    head.className = "focus-head";
+    head.innerHTML = `
+      <span class="chev">▸</span>
+      <div class="focus-title">
+        <h2>${sec.name}</h2>
+        <div class="focus-bar-track"><div class="focus-bar-fill" id="fbar-${si}"></div></div>
+      </div>
+      <div class="focus-stat" id="fstat-${si}">0/0 · 0%</div>
+    `;
+    head.addEventListener("click", ()=> secEl.classList.toggle("open"));
+    secEl.appendChild(head);
+
+    const body = document.createElement("div");
+    body.className = "focus-body";
+
+    sec.subs.forEach((sub, ui)=>{
+      const subEl = document.createElement("div");
+      subEl.className = "subheading open";
+
+      const subHead = document.createElement("div");
+      subHead.className = "sub-head";
+      subHead.innerHTML = `<span class="sub-chev">▸</span><span class="sub-name">${sub.name}</span><span class="sub-frac" id="sfrac-${si}-${ui}"></span>`;
+      subHead.addEventListener("click", ()=> subEl.classList.toggle("open"));
+      subEl.appendChild(subHead);
+
+      const list = document.createElement("div");
+      list.className = "sub-items";
+
+      sub.items.forEach((it, ii)=>{
+        const wrap = document.createElement("div");
+        wrap.className = "item";
+
+        const id = itemId(si,ui,ii);
+        const row = document.createElement("label");
+        row.className = "row";
+        row.innerHTML = `<input type="checkbox" data-id="${id}"><span class="txt">${it.t}</span>`;
+        wrap.appendChild(row);
+
+        if(it.inc && it.inc.length){
+          const incWrap = document.createElement("div");
+          incWrap.className = "including-list";
+          it.inc.forEach((txt, ci)=>{
+            const cid = incId(si,ui,ii,ci);
+            const crow = document.createElement("label");
+            crow.className = "row sub-item";
+            crow.innerHTML = `<input type="checkbox" data-id="${cid}"><span class="txt">${txt}</span>`;
+            incWrap.appendChild(crow);
+          });
+          wrap.appendChild(incWrap);
+        }
+
+        list.appendChild(wrap);
+      });
+
+      subEl.appendChild(list);
+      body.appendChild(subEl);
+    });
+
+    secEl.appendChild(body);
+    root.appendChild(secEl);
+  });
+
+  root.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.checked = !!state[cb.dataset.id];
+    cb.closest('label').classList.toggle('checked', cb.checked);
+    cb.addEventListener('change', ()=>{
+      state[cb.dataset.id] = cb.checked;
+      cb.closest('label').classList.toggle('checked', cb.checked);
+      saveState();
+      updateProgress();
+    });
+  });
+}
+
+function collectIds(){
+  const all = [];
+  DATA.forEach((sec, si)=> sec.subs.forEach((sub, ui)=> sub.items.forEach((it, ii)=>{
+    all.push({ id:itemId(si,ui,ii), si, ui });
+    if(it.inc) it.inc.forEach((_, ci)=> all.push({ id:incId(si,ui,ii,ci), si, ui }));
+  })));
+  return all;
+}
+
+function updateProgress(){
+  const all = collectIds();
+  const totalChecked = all.filter(x=>state[x.id]).length;
+  const totalAll = all.length;
+  const overallPct = totalAll ? Math.round((totalChecked/totalAll)*100) : 0;
+  document.getElementById("overallPct").textContent = overallPct + "%";
+  document.getElementById("overallBar").style.width = overallPct + "%";
+  document.getElementById("overallFrac").textContent = `${totalChecked} / ${totalAll} points`;
+
+  DATA.forEach((sec, si)=>{
+    const secIds = all.filter(x=>x.si===si);
+    const secChecked = secIds.filter(x=>state[x.id]).length;
+    const secTotal = secIds.length;
+    const pct = secTotal ? Math.round((secChecked/secTotal)*100) : 0;
+    const bar = document.getElementById(`fbar-${si}`);
+    if(bar) bar.style.width = pct + "%";
+    const stat = document.getElementById(`fstat-${si}`);
+    if(stat) stat.textContent = `${secChecked}/${secTotal} · ${pct}%`;
+
+    sec.subs.forEach((sub, ui)=>{
+      const subIds = all.filter(x=>x.si===si && x.ui===ui);
+      const subChecked = subIds.filter(x=>state[x.id]).length;
+      const el = document.getElementById(`sfrac-${si}-${ui}`);
+      if(el) el.textContent = `${subChecked}/${subIds.length}`;
+    });
+  });
+}
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=> t.classList.remove("show"), 2400);
+}
+
+document.getElementById("expandAllBtn").addEventListener("click", ()=>{
+  document.querySelectorAll(".focus, .subheading").forEach(el=>el.classList.add("open"));
+});
+document.getElementById("collapseAllBtn").addEventListener("click", ()=>{
+  document.querySelectorAll(".focus, .subheading").forEach(el=>el.classList.remove("open"));
+});
+
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const payload = {
+    app: "se-y12-web-checklist",
+    exportedAt: new Date().toISOString(),
+    state
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `web-y12-checklist-progress-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("Progress exported.");
+});
+
+document.getElementById("importBtn").addEventListener("click", ()=>{
+  document.getElementById("importFile").click();
+});
+document.getElementById("importFile").addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed || typeof parsed.state !== "object") throw new Error("bad format");
+      state = parsed.state;
+      saveState();
+      buildUI();
+      updateProgress();
+      showToast("Progress imported.");
+    }catch(err){
+      showToast("Import failed — that file doesn't look right.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Clear every tick on this device? This can't be undone (export first if you want a backup).")){
+    state = {};
+    saveState();
+    buildUI();
+    updateProgress();
+    showToast("All ticks cleared.");
+  }
+});
+
+loadState();
+buildUI();
+updateProgress();
+</script>
+</body>
+</html>
